@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Cookie 前后端交互演示</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                padding: 20px;
+            }
+
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                background: white;
+                border-radius: 15px;
+                padding: 30px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            }
+
+            h1 {
+                text-align: center;
+                color: #333;
+                margin-bottom: 30px;
+                font-size: 2.5em;
+            }
+
+            .tabs {
+                display: flex;
+                margin-bottom: 30px;
+                border-bottom: 2px solid #e0e0e0;
+            }
+
+            .tab {
+                padding: 15px 25px;
+                cursor: pointer;
+                border: none;
+                background: none;
+                font-size: 16px;
+                color: #666;
+                border-bottom: 3px solid transparent;
+                transition: all 0.3s;
+            }
+
+            .tab.active {
+                color: #667eea;
+                border-bottom-color: #667eea;
+                font-weight: bold;
+            }
+
+            .tab:hover {
+                color: #667eea;
+            }
+
+            .tab-content {
+                display: none;
+            }
+
+            .tab-content.active {
+                display: block;
+            }
+
+            .section {
+                margin-bottom: 30px;
+                padding: 25px;
+                border: 2px solid #e0e0e0;
+                border-radius: 10px;
+                background: #f9f9f9;
+            }
+
+            .section h2 {
+                color: #555;
+                margin-bottom: 20px;
+                font-size: 1.5em;
+            }
+
+            .form-group {
+                margin-bottom: 15px;
+            }
+
+            label {
+                display: block;
+                margin-bottom: 5px;
+                font-weight: bold;
+                color: #333;
+            }
+
+            input,
+            select,
+            textarea {
+                width: 100%;
+                padding: 12px;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                font-size: 14px;
+                transition: border-color 0.3s;
+            }
+
+            input:focus,
+            select:focus,
+            textarea:focus {
+                outline: none;
+                border-color: #667eea;
+            }
+
+            button {
+                background: #667eea;
+                color: white;
+                padding: 12px 24px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 14px;
+                margin-right: 10px;
+                margin-bottom: 10px;
+                transition: background 0.3s;
+            }
+
+            button:hover {
+                background: #5a6fd8;
+            }
+
+            .btn-danger {
+                background: #e74c3c;
+            }
+
+            .btn-danger:hover {
+                background: #c0392b;
+            }
+
+            .btn-success {
+                background: #27ae60;
+            }
+
+            .btn-success:hover {
+                background: #229954;
+            }
+
+            .btn-warning {
+                background: #f39c12;
+            }
+
+            .btn-warning:hover {
+                background: #e67e22;
+            }
+
+            .response-area {
+                background: white;
+                padding: 15px;
+                border-radius: 5px;
+                border: 1px solid #ddd;
+                min-height: 100px;
+                font-family: monospace;
+                white-space: pre-wrap;
+                margin-top: 15px;
+                max-height: 300px;
+                overflow-y: auto;
+            }
+
+            .status-bar {
+                background: #2c3e50;
+                color: white;
+                padding: 10px 20px;
+                border-radius: 5px;
+                margin-bottom: 20px;
+                font-family: monospace;
+            }
+
+            .cookie-item {
+                background: #e8f4fd;
+                border-left: 4px solid #667eea;
+                padding: 10px;
+                margin: 5px 0;
+                border-radius: 5px;
+            }
+
+            .explanation {
+                background: #fff3cd;
+                border: 1px solid #ffeaa7;
+                border-radius: 5px;
+                padding: 15px;
+                margin-top: 15px;
+                line-height: 1.6;
+            }
+
+            .grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+            }
+
+            @media (max-width: 768px) {
+                .grid {
+                    grid-template-columns: 1fr;
+                }
+
+                .tabs {
+                    flex-wrap: wrap;
+                }
+
+                .tab {
+                    flex: 1;
+                    min-width: 120px;
+                }
+            }
+
+            .product-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 15px;
+                margin-top: 15px;
+            }
+
+            .product-card {
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                padding: 15px;
+                text-align: center;
+                background: white;
+            }
+
+            .cart-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px;
+                border-bottom: 1px solid #eee;
+            }
+
+            .user-info {
+                background: #d4edda;
+                border: 1px solid #c3e6cb;
+                color: #155724;
+                padding: 10px;
+                border-radius: 5px;
+                margin-bottom: 15px;
+            }
+
+            .error-info {
+                background: #f8d7da;
+                border: 1px solid #f5c6cb;
+                color: #721c24;
+                padding: 10px;
+                border-radius: 5px;
+                margin-bottom: 15px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>🍪 Cookie 前后端交互演示</h1>
+
+            <div class="status-bar" id="statusBar">状态: 正在连接服务器...</div>
+
+            <div class="tabs">
+                <button class="tab active" onclick="showTab('basic')">
+                    基础操作
+                </button>
+                <button class="tab" onclick="showTab('auth')">用户认证</button>
+                <button class="tab" onclick="showTab('session')">
+                    会话管理
+                </button>
+                <button class="tab" onclick="showTab('preferences')">
+                    偏好设置
+                </button>
+                <button class="tab" onclick="showTab('monitor')">
+                    Cookie监控
+                </button>
+            </div>
+
+            <!-- 基础操作标签页 -->
+            <div id="basic" class="tab-content active">
+                <div class="grid">
+                    <div class="section">
+                        <h2>📝 设置Cookie</h2>
+                        <div class="form-group">
+                            <label for="cookieName">Cookie名称:</label>
+                            <input
+                                type="text"
+                                id="cookieName"
+                                placeholder="例如: user_preference"
+                            />
+                        </div>
+                        <div class="form-group">
+                            <label for="cookieValue">Cookie值:</label>
+                            <input
+                                type="text"
+                                id="cookieValue"
+                                placeholder="例如: dark_theme"
+                            />
+                        </div>
+                        <div class="form-group">
+                            <label for="cookieExpires">过期时间(分钟):</label>
+                            <select id="cookieExpires">
+                                <option value="session">会话结束时</option>
+                                <option value="5">5分钟</option>
+                                <option value="30">30分钟</option>
+                                <option value="60">1小时</option>
+                                <option value="1440">1天</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="httpOnly" /> HttpOnly
+                                (仅服务器可访问)
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="secure" /> Secure
+                                (仅HTTPS)
+                            </label>
+                        </div>
+                        <button onclick="setCookieOnServer()">
+                            设置Cookie
+                        </button>
+                        <button
+                            onclick="deleteCookieOnServer()"
+                            class="btn-danger"
+                        >
+                            删除Cookie
+                        </button>
+                    </div>
+
+                    <div class="section">
+                        <h2>📖 读取Cookie</h2>
+                        <button onclick="getCookiesFromServer()">
+                            从服务器获取
+                        </button>
+                        <button onclick="getCookiesFromClient()">
+                            从客户端获取
+                        </button>
+                        <div class="response-area" id="cookieDisplay">
+                            点击按钮查看Cookie...
+                        </div>
+                    </div>
+                </div>
+
+                <div class="explanation">
+                    <strong>说明:</strong>
+                    这个部分演示了Cookie的基本操作。服务器端设置的Cookie可以包含HttpOnly等安全属性，而客户端JavaScript只能读取非HttpOnly的Cookie。
+                </div>
+            </div>
+
+            <!-- 用户认证标签页 -->
+            <div id="auth" class="tab-content">
+                <div class="grid">
+                    <div class="section">
+                        <h2>🔐 用户登录</h2>
+                        <div id="userStatus"></div>
+                        <div class="form-group">
+                            <label for="username">用户名:</label>
+                            <input
+                                type="text"
+                                id="username"
+                                placeholder="admin 或 user1"
+                            />
+                        </div>
+                        <div class="form-group">
+                            <label for="password">密码:</label>
+                            <input
+                                type="password"
+                                id="password"
+                                placeholder="admin: 123456, user1: password"
+                            />
+                        </div>
+                        <button onclick="login()" class="btn-success">
+                            登录
+                        </button>
+                        <button onclick="logout()" class="btn-danger">
+                            登出
+                        </button>
+                        <button onclick="getUserInfo()">获取用户信息</button>
+                    </div>
+
+                    <div class="section">
+                        <h2>👤 认证状态</h2>
+                        <div class="response-area" id="authDisplay">未登录</div>
+                    </div>
+                </div>
+
+                <div class="explanation">
+                    <strong>说明:</strong>
+                    演示了如何使用Cookie进行用户认证。服务器设置HttpOnly的认证Token确保安全性，同时设置用户信息Cookie供前端使用。
+                </div>
+            </div>
+
+            <!-- 会话管理标签页 -->
+            <div id="session" class="tab-content">
+                <div class="grid">
+                    <div class="section">
+                        <h2>🛒 购物车演示</h2>
+                        <div class="product-grid">
+                            <div class="product-card">
+                                <h4>苹果</h4>
+                                <p>¥5.00</p>
+                                <button
+                                    onclick="addToCart('apple', '苹果', 5.00)"
+                                >
+                                    加入购物车
+                                </button>
+                            </div>
+                            <div class="product-card">
+                                <h4>香蕉</h4>
+                                <p>¥3.00</p>
+                                <button
+                                    onclick="addToCart('banana', '香蕉', 3.00)"
+                                >
+                                    加入购物车
+                                </button>
+                            </div>
+                            <div class="product-card">
+                                <h4>橙子</h4>
+                                <p>¥4.00</p>
+                                <button
+                                    onclick="addToCart('orange', '橙子', 4.00)"
+                                >
+                                    加入购物车
+                                </button>
+                            </div>
+                        </div>
+                        <button onclick="getCart()" class="btn-warning">
+                            查看购物车
+                        </button>
+                        <button onclick="clearCart()" class="btn-danger">
+                            清空购物车
+                        </button>
+                    </div>
+
+                    <div class="section">
+                        <h2>🛍️ 购物车内容</h2>
+                        <div class="response-area" id="cartDisplay">
+                            购物车为空
+                        </div>
+                    </div>
+                </div>
+
+                <div class="explanation">
+                    <strong>说明:</strong> 演示了如何使用Session
+                    Cookie管理用户会话。每个用户会话都有唯一的Session
+                    ID，服务器根据这个ID来管理用户的购物车数据。
+                </div>
+            </div>
+
+            <!-- 偏好设置标签页 -->
+            <div id="preferences" class="tab-content">
+                <div class="grid">
+                    <div class="section">
+                        <h2>⚙️ 用户偏好设置</h2>
+                        <div class="form-group">
+                            <label for="theme">主题:</label>
+                            <select id="theme">
+                                <option value="light">浅色主题</option>
+                                <option value="dark">深色主题</option>
+                                <option value="auto">自动</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="language">语言:</label>
+                            <select id="language">
+                                <option value="zh-CN">中文</option>
+                                <option value="en-US">English</option>
+                                <option value="ja-JP">日本語</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="notifications" />
+                                启用通知
+                            </label>
+                        </div>
+                        <button onclick="savePreferences()" class="btn-success">
+                            保存偏好
+                        </button>
+                        <button onclick="loadPreferences()">加载偏好</button>
+                    </div>
+
+                    <div class="section">
+                        <h2>📋 当前偏好</h2>
+                        <div class="response-area" id="preferencesDisplay">
+                            点击加载偏好查看当前设置...
+                        </div>
+                    </div>
+                </div>
+
+                <div class="explanation">
+                    <strong>说明:</strong>
+                    演示了如何使用长期Cookie保存用户偏好设置。这些Cookie通常设置较长的过期时间（如30天），用于在用户下次访问时恢复个性化设置。
+                </div>
+            </div>
+
+            <!-- Cookie监控标签页 -->
+            <div id="monitor" class="tab-content">
+                <div class="section">
+                    <h2>🔍 Cookie监控面板</h2>
+                    <button onclick="refreshCookieMonitor()">刷新监控</button>
+                    <button onclick="clearAllCookies()" class="btn-danger">
+                        清除所有Cookie
+                    </button>
+
+                    <h3 style="margin-top: 20px">
+                        客户端Cookie (JavaScript可访问):
+                    </h3>
+                    <div class="response-area" id="clientCookies">
+                        加载中...
+                    </div>
+
+                    <h3 style="margin-top: 20px">
+                        服务器端Cookie (包含HttpOnly):
+                    </h3>
+                    <div class="response-area" id="serverCookies">
+                        加载中...
+                    </div>
+
+                    <h3 style="margin-top: 20px">Cookie详细信息:</h3>
+                    <div class="response-area" id="cookieDetails">
+                        加载中...
+                    </div>
+                </div>
+
+                <div class="explanation">
+                    <strong>说明:</strong>
+                    这个监控面板显示了当前所有的Cookie信息，包括客户端可访问的Cookie和服务器端的HttpOnly
+                    Cookie。可以观察不同操作对Cookie的影响。
+                </div>
+            </div>
+        </div>
+
+        <script src="app.js"></script>
+    </body>
+</html>
