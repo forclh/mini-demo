@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>原生JavaScript实现 - History模式路由</title>
+        <style>
+            body {
+                font-family: "Microsoft YaHei", sans-serif;
+                max-width: 800px;
+                margin: 0 auto;
+                padding: 20px;
+                line-height: 1.6;
+            }
+            h1,
+            h2,
+            h3 {
+                color: #333;
+            }
+            .nav {
+                display: flex;
+                margin-bottom: 20px;
+                background-color: #f5f5f5;
+                padding: 10px;
+                border-radius: 4px;
+            }
+            .nav a {
+                margin-right: 15px;
+                color: #0066cc;
+                text-decoration: none;
+                padding: 5px 10px;
+                cursor: pointer;
+            }
+            .nav a.active {
+                background-color: #0066cc;
+                color: white;
+                border-radius: 4px;
+            }
+            .page {
+                padding: 20px;
+                border: 1px solid #eee;
+                border-radius: 4px;
+                min-height: 200px;
+            }
+            .code-block {
+                background-color: #f8f8f8;
+                border-left: 4px solid #0066cc;
+                padding: 15px;
+                margin: 20px 0;
+                overflow-x: auto;
+            }
+            pre {
+                margin: 0;
+            }
+            .url-display {
+                font-family: monospace;
+                background-color: #f1f1f1;
+                padding: 8px;
+                border-radius: 4px;
+                margin-bottom: 20px;
+                word-break: break-all;
+            }
+            .warning {
+                background-color: #fff3cd;
+                border-left: 4px solid #ffc107;
+                padding: 15px;
+                margin-top: 20px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>原生JavaScript实现 - History模式路由</h1>
+
+        <div class="url-display">当前URL: <span id="current-url"></span></div>
+
+        <div class="nav">
+            <a data-path="/home" class="nav-link">首页</a>
+            <a data-path="/about" class="nav-link">关于</a>
+            <a data-path="/contact" class="nav-link">联系我们</a>
+        </div>
+
+        <div id="app" class="page">
+            <!-- 路由内容将在这里渲染 -->
+        </div>
+
+        <div class="code-block">
+            <h3>History模式实现原理</h3>
+            <pre><code>
+// 1. 定义路由表
+const routes = {
+    '/home': { template: '&lt;h2&gt;首页&lt;/h2&gt;&lt;p&gt;这是首页内容&lt;/p&gt;' },
+    '/about': { template: '&lt;h2&gt;关于我们&lt;/h2&gt;&lt;p&gt;这是关于页面&lt;/p&gt;' },
+    '/contact': { template: '&lt;h2&gt;联系我们&lt;/h2&gt;&lt;p&gt;这是联系页面&lt;/p&gt;' },
+    '/404': { template: '&lt;h2&gt;404 Not Found&lt;/h2&gt;&lt;p&gt;页面不存在&lt;/p&gt;' }
+};
+
+// 2. 渲染函数 - 根据当前路径渲染对应内容
+function render(path) {
+    path = path || '/home';
+    let route = routes[path] || routes['/404'];
+    document.getElementById('app').innerHTML = route.template;
+    
+    // 更新导航高亮
+    document.querySelectorAll('.nav-link').forEach(link => {
+        if (link.getAttribute('data-path') === path) {
+            link.classList.add('active');
+        } else {
+            link.classList.remove('active');
+        }
+    });
+    
+    // 更新URL显示
+    document.getElementById('current-url').textContent = window.location.href;
+}
+
+// 3. 路由跳转函数
+function navigate(path) {
+    // 使用History API修改URL而不刷新页面
+    history.pushState({ path }, '', path);
+    render(path);
+}
+
+// 4. 监听导航点击事件
+document.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const path = link.getAttribute('data-path');
+        navigate(path);
+    });
+});
+
+// 5. 监听浏览器前进/后退按钮
+window.addEventListener('popstate', (e) => {
+    const path = e.state ? e.state.path : '/home';
+    render(path);
+});
+
+// 6. 初始渲染
+render(window.location.pathname);
+        </code></pre>
+        </div>
+
+        <div class="code-block">
+            <h3>History模式的工作原理</h3>
+            <ol>
+                <li>
+                    <strong>HTML5 History API</strong
+                    >：利用history.pushState()修改URL而不刷新页面
+                </li>
+                <li>
+                    <strong>状态管理</strong
+                    >：可以在pushState()中保存状态对象，记录路由信息
+                </li>
+                <li>
+                    <strong>popstate事件</strong
+                    >：当用户点击浏览器前进/后退按钮时触发
+                </li>
+                <li>
+                    <strong>拦截链接点击</strong
+                    >：拦截a标签的点击事件，使用pushState()代替默认跳转
+                </li>
+            </ol>
+            <p><strong>优点</strong>：URL更美观，没有#符号，对SEO更友好</p>
+            <p>
+                <strong>缺点</strong>：需要服务器配置，否则刷新页面会返回404错误
+            </p>
+        </div>
+
+        <div class="warning">
+            <h3>⚠️ 重要提示</h3>
+            <p>在本地直接打开此文件时，History模式可能无法正常工作，因为：</p>
+            <ol>
+                <li>浏览器安全限制可能阻止某些History API操作</li>
+                <li>刷新页面时会尝试从文件系统加载对应路径，导致404错误</li>
+            </ol>
+            <p>
+                在生产环境中使用History模式时，需要配置服务器将所有路由请求重定向到index.html。
+            </p>
+            <p>
+                请使用提供的Node.js服务器（server.js）来正确测试此示例：<code
+                    >node server.js</code
+                >
+            </p>
+        </div>
+
+        <script>
+            // 1. 定义路由表
+            const routes = {
+                "/home": { template: "<h2>首页</h2><p>这是首页内容</p>" },
+                "/about": { template: "<h2>关于我们</h2><p>这是关于页面</p>" },
+                "/contact": {
+                    template: "<h2>联系我们</h2><p>这是联系页面</p>",
+                },
+                "/404": { template: "<h2>404 Not Found</h2><p>页面不存在</p>" },
+            };
+
+            // 2. 渲染函数 - 根据当前路径渲染对应内容
+            function render(path) {
+                // 处理路径，移除基础路径部分
+                const basePath = "/history-mode-vanilla.html";
+                if (path.includes(basePath)) {
+                    path = path.replace(basePath, "") || "/home";
+                }
+
+                // 如果路径为空或根路径，默认为首页
+                if (path === "" || path === "/") {
+                    path = "/home";
+                }
+
+                let route = routes[path] || routes["/404"];
+                document.getElementById("app").innerHTML = route.template;
+
+                // 更新导航高亮
+                document.querySelectorAll(".nav-link").forEach((link) => {
+                    if (link.getAttribute("data-path") === path) {
+                        link.classList.add("active");
+                    } else {
+                        link.classList.remove("active");
+                    }
+                });
+
+                // 更新URL显示
+                document.getElementById("current-url").textContent =
+                    window.location.href;
+            }
+
+            // 3. 路由跳转函数
+            function navigate(path) {
+                // 使用History API修改URL而不刷新页面
+                history.pushState({ path }, "", path);
+                render(path);
+            }
+
+            // 4. 监听导航点击事件
+            document.querySelectorAll(".nav-link").forEach((link) => {
+                link.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    const path = link.getAttribute("data-path");
+                    navigate(path);
+                });
+            });
+
+            // 5. 监听浏览器前进/后退按钮
+            window.addEventListener("popstate", (e) => {
+                const path = e.state ? e.state.path : window.location.pathname;
+                render(path);
+            });
+
+            // 6. 初始渲染
+            render(window.location.pathname);
+        </script>
+    </body>
+</html>

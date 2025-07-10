@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>前端路由模式演示</title>
+        <style>
+            body {
+                font-family: "Microsoft YaHei", sans-serif;
+                max-width: 1000px;
+                margin: 0 auto;
+                padding: 40px 20px;
+                line-height: 1.6;
+            }
+            h1,
+            h2,
+            h3 {
+                color: #2c3e50;
+            }
+            h1 {
+                text-align: center;
+                margin-bottom: 40px;
+                color: #0066cc;
+            }
+            .section {
+                margin-bottom: 50px;
+            }
+            .section-title {
+                border-bottom: 2px solid #0066cc;
+                padding-bottom: 10px;
+                margin-bottom: 25px;
+            }
+            .container {
+                display: flex;
+                justify-content: space-between;
+                gap: 30px;
+                flex-wrap: wrap;
+            }
+            .card {
+                flex: 1;
+                min-width: 300px;
+                border: 1px solid #eee;
+                border-radius: 8px;
+                padding: 20px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                transition: transform 0.3s, box-shadow 0.3s;
+                margin-bottom: 20px;
+            }
+            .card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            }
+            .card h3 {
+                color: #2c3e50;
+                margin-top: 0;
+                padding-bottom: 10px;
+                border-bottom: 1px solid #eee;
+            }
+            .card p {
+                margin-bottom: 25px;
+                min-height: 80px;
+            }
+            .btn {
+                display: inline-block;
+                background-color: #0066cc;
+                color: white;
+                padding: 10px 20px;
+                border-radius: 4px;
+                text-decoration: none;
+                transition: background-color 0.3s;
+            }
+            .btn:hover {
+                background-color: #0055aa;
+            }
+            .comparison {
+                margin-top: 40px;
+                background-color: #f8f8f8;
+                padding: 20px;
+                border-radius: 8px;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
+            th,
+            td {
+                padding: 12px 15px;
+                text-align: left;
+                border-bottom: 1px solid #ddd;
+            }
+            th {
+                background-color: #f2f2f2;
+            }
+            tr:hover {
+                background-color: #f5f5f5;
+            }
+            .note {
+                background-color: #e7f5ff;
+                border-left: 4px solid #0066cc;
+                padding: 15px;
+                margin: 20px 0;
+                border-radius: 0 4px 4px 0;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>前端路由模式演示</h1>
+
+        <div class="note">
+            <p>
+                <strong>说明：</strong>
+                本项目演示了使用原生JavaScript实现前端路由的两种模式（Hash模式和History模式）、
+            </p>
+            <p>
+                <strong>运行方式：</strong>
+                为了完整体验所有功能，特别是History模式，请使用Node.js运行服务器：<code
+                    >node server.js</code
+                >，然后访问
+                <a href="http://localhost:3000">http://localhost:3000</a>
+            </p>
+        </div>
+
+        <div class="section">
+            <div class="container">
+                <div class="card">
+                    <h3>Hash 模式</h3>
+                    <p>
+                        使用纯JavaScript实现的Hash模式路由，展示了hashchange事件的使用和路由状态管理的基本原理。
+                    </p>
+                    <p>
+                        <strong>核心技术：</strong>
+                        window.location.hash、hashchange事件
+                    </p>
+                    <a href="hash-mode-vanilla.html" class="btn">查看演示</a>
+                </div>
+
+                <div class="card">
+                    <h3>History 模式</h3>
+                    <p>
+                        使用纯JavaScript实现的History模式路由，展示了HTML5
+                        History API的使用和前端路由的核心原理。
+                    </p>
+                    <p>
+                        <strong>核心技术：</strong>
+                        history.pushState()、popstate事件
+                    </p>
+                    <a href="history-mode-vanilla.html" class="btn">查看演示</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="comparison">
+            <h2>两种模式对比</h2>
+            <table>
+                <tr>
+                    <th>特性</th>
+                    <th>Hash 模式</th>
+                    <th>History 模式</th>
+                </tr>
+                <tr>
+                    <td>URL 格式</td>
+                    <td>example.com/#/path</td>
+                    <td>example.com/path</td>
+                </tr>
+                <tr>
+                    <td>浏览器支持</td>
+                    <td>所有浏览器</td>
+                    <td>IE10+ 和所有现代浏览器</td>
+                </tr>
+                <tr>
+                    <td>服务器配置</td>
+                    <td>不需要</td>
+                    <td>需要配置所有路由重定向到 index.html</td>
+                </tr>
+                <tr>
+                    <td>SEO 友好度</td>
+                    <td>较差（搜索引擎通常忽略 # 后内容）</td>
+                    <td>较好（完整 URL 可被搜索引擎索引）</td>
+                </tr>
+                <tr>
+                    <td>实现原理</td>
+                    <td>监听 hashchange 事件</td>
+                    <td>使用 History API 和监听 popstate 事件</td>
+                </tr>
+                <tr>
+                    <td>刷新页面行为</td>
+                    <td>保持在当前路由状态</td>
+                    <td>需要服务器配置，否则可能404</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="note">
+            <h3>学习资源</h3>
+            <ul>
+                <li>
+                    <a href="https://router.vuejs.org/zh/" target="_blank"
+                        >Vue Router 官方文档</a
+                    >
+                </li>
+                <li>
+                    <a
+                        href="https://developer.mozilla.org/zh-CN/docs/Web/API/History_API"
+                        target="_blank"
+                        >MDN - History API</a
+                    >
+                </li>
+                <li>
+                    <a
+                        href="https://developer.mozilla.org/zh-CN/docs/Web/API/Window/hashchange_event"
+                        target="_blank"
+                        >MDN - hashchange 事件</a
+                    >
+                </li>
+            </ul>
+        </div>
+    </body>
+</html>

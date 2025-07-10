@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>原生JavaScript实现 - Hash模式路由</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        .nav {
+            display: flex;
+            margin-bottom: 20px;
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .nav a {
+            margin-right: 15px;
+            color: #0066cc;
+            text-decoration: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .nav a.active {
+            background-color: #0066cc;
+            color: white;
+            border-radius: 4px;
+        }
+        .page {
+            padding: 20px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            min-height: 200px;
+        }
+        .code-block {
+            background-color: #f8f8f8;
+            border-left: 4px solid #0066cc;
+            padding: 15px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        pre {
+            margin: 0;
+        }
+        .url-display {
+            font-family: monospace;
+            background-color: #f1f1f1;
+            padding: 8px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <h1>原生JavaScript实现 - Hash模式路由</h1>
+    
+    <div class="url-display">
+        当前URL: <span id="current-url"></span>
+    </div>
+    
+    <div class="nav">
+        <a href="#/home" class="nav-link">首页</a>
+        <a href="#/about" class="nav-link">关于</a>
+        <a href="#/contact" class="nav-link">联系我们</a>
+    </div>
+    
+    <div id="app" class="page">
+        <!-- 路由内容将在这里渲染 -->
+    </div>
+    
+    <div class="code-block">
+        <h3>Hash模式实现原理</h3>
+        <pre><code>
+// 1. 定义路由表
+const routes = {
+    '#/home': { template: '&lt;h2&gt;首页&lt;/h2&gt;&lt;p&gt;这是首页内容&lt;/p&gt;' },
+    '#/about': { template: '&lt;h2&gt;关于我们&lt;/h2&gt;&lt;p&gt;这是关于页面&lt;/p&gt;' },
+    '#/contact': { template: '&lt;h2&gt;联系我们&lt;/h2&gt;&lt;p&gt;这是联系页面&lt;/p&gt;' },
+    '#/404': { template: '&lt;h2&gt;404 Not Found&lt;/h2&gt;&lt;p&gt;页面不存在&lt;/p&gt;' }
+};
+
+// 2. 渲染函数 - 根据当前hash渲染对应内容
+function render() {
+    let hash = window.location.hash || '#/home';
+    let route = routes[hash] || routes['#/404'];
+    document.getElementById('app').innerHTML = route.template;
+    
+    // 更新导航高亮
+    document.querySelectorAll('.nav-link').forEach(link => {
+        if (link.getAttribute('href') === hash) {
+            link.classList.add('active');
+        } else {
+            link.classList.remove('active');
+        }
+    });
+    
+    // 更新URL显示
+    document.getElementById('current-url').textContent = window.location.href;
+}
+
+// 3. 监听hash变化事件
+window.addEventListener('hashchange', render);
+
+// 4. 初始渲染
+render();
+        </code></pre>
+    </div>
+    
+    <div class="code-block">
+        <h3>Hash模式的工作原理</h3>
+        <ol>
+            <li><strong>URL哈希值</strong>：利用URL中的哈希部分（# 后面的内容）来模拟路径</li>
+            <li><strong>不触发页面刷新</strong>：改变哈希值不会导致浏览器向服务器发送请求</li>
+            <li><strong>hashchange事件</strong>：当哈希值变化时，浏览器会触发hashchange事件</li>
+            <li><strong>路由映射</strong>：通过监听hashchange事件，根据当前哈希值渲染对应的内容</li>
+        </ol>
+        <p><strong>优点</strong>：兼容性好，支持所有浏览器，无需服务器配置</p>
+        <p><strong>缺点</strong>：URL不够美观，带有#符号，对SEO不友好</p>
+    </div>
+
+    <script>
+        // 1. 定义路由表
+        const routes = {
+            '#/home': { template: '<h2>首页</h2><p>这是首页内容</p>' },
+            '#/about': { template: '<h2>关于我们</h2><p>这是关于页面</p>' },
+            '#/contact': { template: '<h2>联系我们</h2><p>这是联系页面</p>' },
+            '#/404': { template: '<h2>404 Not Found</h2><p>页面不存在</p>' }
+        };
+
+        // 2. 渲染函数 - 根据当前hash渲染对应内容
+        function render() {
+            let hash = window.location.hash || '#/home';
+            let route = routes[hash] || routes['#/404'];
+            document.getElementById('app').innerHTML = route.template;
+            
+            // 更新导航高亮
+            document.querySelectorAll('.nav-link').forEach(link => {
+                if (link.getAttribute('href') === hash) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+            
+            // 更新URL显示
+            document.getElementById('current-url').textContent = window.location.href;
+        }
+
+        // 3. 监听hash变化事件
+        window.addEventListener('hashchange', render);
+
+        // 4. 初始渲染
+        render();
+    </script>
+</body>
+</html>
