@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>HTML5 拖曳API学习Demo</title>
+        <link rel="stylesheet" href="./index.css" />
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>🎯 HTML5 拖曳API学习Demo</h1>
+                <p>通过实际示例学习和理解HTML5的拖曳功能</p>
+            </div>
+
+            <!-- 基本拖曳示例 -->
+            <div class="demo-section">
+                <h2 class="demo-title">1. 基本拖曳操作</h2>
+                <p class="demo-description">
+                    最基础的拖曳功能：将元素从一个位置拖曳到另一个位置
+                </p>
+
+                <div class="demo-grid">
+                    <div>
+                        <h4>可拖曳元素：</h4>
+                        <div
+                            class="draggable-item"
+                            draggable="true"
+                            data-item="item1"
+                        >
+                            📦 拖我试试
+                        </div>
+                        <div
+                            class="draggable-item"
+                            draggable="true"
+                            data-item="item2"
+                        >
+                            🎁 我也可以拖
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4>放置区域：</h4>
+                        <div class="drop-zone" id="dropZone1">
+                            <div class="drop-zone-text">将元素拖曳到这里</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 列表排序示例 -->
+            <div class="demo-section">
+                <h2 class="demo-title">2. 列表排序</h2>
+                <p class="demo-description">
+                    拖曳列表项来重新排序，体验拖曳排序的实现
+                </p>
+
+                <div class="sortable-list" id="sortableList">
+                    <div class="sortable-item" draggable="true">
+                        📚 学习HTML基础
+                    </div>
+                    <div class="sortable-item" draggable="true">
+                        🎨 掌握CSS样式
+                    </div>
+                    <div class="sortable-item" draggable="true">
+                        ⚡ 学习JavaScript
+                    </div>
+                    <div class="sortable-item" draggable="true">
+                        🚀 构建项目
+                    </div>
+                    <div class="sortable-item" draggable="true">
+                        🎯 找到工作
+                    </div>
+                </div>
+            </div>
+
+            <!-- 文件拖曳示例 -->
+            <div class="demo-section">
+                <h2 class="demo-title">3. 文件拖曳上传</h2>
+                <p class="demo-description">
+                    从桌面拖曳文件到浏览器，模拟文件上传功能
+                </p>
+
+                <div class="file-drop-zone" id="fileDropZone">
+                    <div>
+                        <h3>📁 拖曳文件到这里</h3>
+                        <p>支持拖曳任何文件类型</p>
+                    </div>
+                </div>
+                <div
+                    id="fileInfo"
+                    class="file-info"
+                    style="display: none"
+                ></div>
+            </div>
+
+            <!-- 购物车示例 -->
+            <div class="demo-section">
+                <h2 class="demo-title">4. 购物车拖曳</h2>
+                <p class="demo-description">
+                    将商品拖曳到购物车，模拟电商网站的交互
+                </p>
+
+                <div class="shopping-demo">
+                    <div>
+                        <h4>商品列表：</h4>
+                        <div class="products">
+                            <div
+                                class="product"
+                                draggable="true"
+                                data-product="laptop"
+                            >
+                                <div class="product img">💻</div>
+                                <h4>笔记本电脑</h4>
+                                <p>¥5999</p>
+                            </div>
+                            <div
+                                class="product"
+                                draggable="true"
+                                data-product="phone"
+                            >
+                                <div class="product img">📱</div>
+                                <h4>智能手机</h4>
+                                <p>¥3999</p>
+                            </div>
+                            <div
+                                class="product"
+                                draggable="true"
+                                data-product="headphones"
+                            >
+                                <div class="product img">🎧</div>
+                                <h4>无线耳机</h4>
+                                <p>¥299</p>
+                            </div>
+                            <div
+                                class="product"
+                                draggable="true"
+                                data-product="watch"
+                            >
+                                <div class="product img">⌚</div>
+                                <h4>智能手表</h4>
+                                <p>¥1999</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4>购物车：</h4>
+                        <div class="cart" id="shoppingCart">
+                            <div class="drop-zone-text">将商品拖曳到购物车</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 事件日志 -->
+            <div class="demo-section">
+                <div class="event-log" id="eventLog">
+                    <h4>📋 拖曳事件日志：</h4>
+                    <div class="log-entry">
+                        页面已加载，开始拖曳操作来查看事件...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="./index.js"></script>
+    </body>
+</html>
